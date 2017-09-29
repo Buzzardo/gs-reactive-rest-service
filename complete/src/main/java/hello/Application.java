@@ -7,9 +7,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Application {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(Application.class, args);
 
 		GreetingWebClient gwc = new GreetingWebClient();
-		System.out.println(gwc.getResult());
+
+		System.out.println(gwc.getResult()
+			    .map(s -> ">> result = " + s)
+			    .block()
+			);
 	}
 }
