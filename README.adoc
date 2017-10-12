@@ -74,8 +74,8 @@ our REST controller.
 == Create a REST Controller
 
 In this application, we use a REST Controller to handle two routes ("/randomquotation"
-and "/quotations"). The first route ("/randomquotation") takes no arguments. The sedcond
-route ("/quotatoions") can take two arguments, to specify which quotation to start with
+and "/quotations"). The first route ("/randomquotation") takes no arguments. The second
+route ("/quotations") can take two arguments, to specify which quotation to start with
 and how many quotations to return. The following listing shows our REST controller:
 
 `src/main/java/quotation/QuotationController.java`
@@ -84,7 +84,7 @@ and how many quotations to return. The following listing shows our REST controll
 include::complete/src/main/java/quotation/QuotationController.java[]
 ----
 
-The router listens for traffic on the `/randomquotation` and `quotations` paths and
+The router listens for traffic on the `/randomquotation` and `/quotations` paths and
 returns one or more quotations to the browser.
 
 To get a random quotation, we call a private helper method to get the value from the
@@ -125,10 +125,10 @@ everything in a single, executable JAR file, driven by a good old Java `main()` 
 Along the way, you use Reactive Spring's support for embedding the Netty server as the
 HTTP runtime, instead of deploying to an external instance.
 
-`src/main/java/hello/Application.java`
+`src/main/java/quotation/QuotationWebfluxApplication.java`
 [source,java]
 ----
-include::complete/src/main/java/hello/Application.java[]
+include::complete/src/main/java/quotation/QuotationWebfluxApplication.java[]
 ----
 
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/spring-boot-application.adoc[]
@@ -137,26 +137,15 @@ include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/
 
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/build_an_executable_jar_with_both.adoc[]
 
-Logging output is displayed. The service should be up and running within a few seconds.
-
-Once the service has started, you'll see a line that reads:
-
-`>> result = Hello, Spring!`
-
-That line comes from the reactive content being consumed by the WebClient. Naturally,
-you can find something more interesting to do with your output than put it in System.out.
-
 == Test the Application
 
 Now that the application is running, you can test it. To start with, you can open a
-browser and go to `http://localhost:8080/hello` and see, "Hello, Spring!" For this guide,
-we also created a test class to get you started on testing with the WebTestClient class.
+browser and go to `http://localhost:8080/randomquotation` and see a random quotation.
 
-`src/test/java/hello/GreetingRouterTest.java`
-[source,java]
-----
-include::complete/src/test/java/hello/GreetingRouterTest.java[]
-----
+You can also visit `http://localhost:8080/quotations`. That path can handle two query
+parameters: `startQuotation` and `numQuotations`. For example, you can get quotations 2
+through 4 at the following address:
+`http://localhost:8080/quotations?startQuotation=2&numQuotations=3`
 
 == Summary
 

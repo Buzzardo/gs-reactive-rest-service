@@ -24,17 +24,19 @@ public class QuotationController {
 		return getQuotation("https://gturnquist-quoters.cfapps.io/api/random");
 	}
 
-
 	@GetMapping("/quotations")
 	Flux<Quotation> getQuotes(@RequestParam(name="startQuotation", defaultValue="1", required=false) int startQuotation,
-						  @RequestParam(name="numQuotations", defaultValue="1", required=false) int numQuotations) {
+			@RequestParam(name="numQuotations", defaultValue="1", required=false) int numQuotations) {
 
+		final int sanitizedStartQuotation;
 		if (startQuotation > 12) {
-			startQuotation = startQuotation % 12; // The quotation service has 12 entries.
+			sanitizedStartQuotation = startQuotation % 12; // The quotation service has 12 entries.
 		}
-
-		if (startQuotation < 1) {
-			startQuotation = 1;
+		else if (startQuotation < 1) {
+			sanitizedStartQuotation = 1;
+		}
+		else {
+			sanitizedStartQuotation = startQuotation;
 		}
 
 		if (numQuotations > 12) {
@@ -44,35 +46,60 @@ public class QuotationController {
 		if (numQuotations < 1) {
 			numQuotations = 1;
 		}
-		
-		int nextQuotation = startQuotation;
 
-		String uriString = "https://gturnquist-quoters.cfapps.io/api/" + nextQuotation;
-
-		Mono<Quotation> firstMono = getQuotation(uriString);
-
-		Flux<Quotation> flux = firstMono.flux();
-		
-		if (numQuotations > 1) {
-
-			for (int i = 1; i < numQuotations; i++) {
-
-				nextQuotation = nextQuotation + 1;
-
-				if (nextQuotation > 12) {
-					nextQuotation = 1;
-				}
-
-				uriString = "https://gturnquist-quoters.cfapps.io/api/" + nextQuotation;
-
-				Mono<Quotation> nextMono = getQuotation(uriString);
-
-				flux = flux.concatWith(nextMono);
-			}
-		}
-
-		return flux;
+		return Flux.range(0, numQuotations)
+		           .map(i -> (i + sanitizedStartQuotation))
+		           .map(nextQuotation -> "https://gturnquist-quoters.cfapps.io/api/" + ((nextQuotation == 12) ? 12: nextQuotation %12))
+		           .concatMap(this::getQuotation);
 	}
+//	@GetMapping("/quotations")
+//	Flux<Quotation> getQuotes(@RequestParam(name="startQuotation", defaultValue="1", required=false) int startQuotation,
+//						  @RequestParam(name="numQuotations", defaultValue="1", required=false) int numQuotations) {
+//
+//		if (startQuotation > 12) {
+//			startQuotation = startQuotation % 12; // The quotation service has 12 entries.
+//		}
+//
+//		if (startQuotation < 1) {
+//			startQuotation = 1;
+//		}
+//
+//		if (numQuotations > 12) {
+//			numQuotations = 12;
+//		}
+//
+//		if (numQuotations < 1) {
+//			numQuotations = 1;
+//		}
+//		
+//		int nextQuotation = startQuotation;
+//
+//		String uriString = "https://gturnquist-quoters.cfapps.io/api/" + nextQuotation;
+//
+//		Mono<Quotation> firstMono = getQuotation(uriString);
+//
+//		Flux<Quotation> flux = firstMono.flux();
+//		
+//		if (numQuotations > 1) {
+//
+//			for (int i = 1; i < numQuotations; i++) {
+//
+//				nextQuotation = nextQuotation + 1;
+//
+//				if (nextQuotation > 12) {
+//					nextQuotation = 1;
+//				}
+//
+//				uriString = "https://gturnquist-quoters.cfapps.io/api/" + nextQuotation;
+//
+//				Mono<Quotation> nextMono = getQuotation(uriString);
+//
+//				flux = flux.concatWith(nextMono);
+//			}
+//		}
+//
+//		return flux;
+//	}
 
 	private Mono<Quotation> getQuotation(String uri) {
 
