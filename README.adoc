@@ -149,7 +149,7 @@ through 4 at the following address:
 
 == Summary
 
-Congratulations! You have developed a Reactive Spring application that includes a
-WebClient to consume a RESTful service!
+Congratulations! You have developed a Reactive Spring application uses the annotations
+already in use by many Spring developers!
 
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/footer.adoc[]
